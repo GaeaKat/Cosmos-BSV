@@ -1,4 +1,4 @@
-FROM gigamonkey/gigamonkey-base-dev:v1.1.4 AS build
+FROM gigamonkey/gigamonkey-base-dev:v2.1 AS build
 
 #data
 WORKDIR /tmp
