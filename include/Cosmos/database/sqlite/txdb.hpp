@@ -2,7 +2,8 @@
 #define COSMOS_DATABASE_MEMORY_TXDB
 
 #include <Cosmos/database/txdb.hpp>
-
+#include <Cosmos/database/sqlite/models/header.hpp>
+#include <sqlite_orm/sqlite_orm.h>
 namespace Cosmos {
 
     // see <Cosmos/database/json/txdb.hpp> for an example
@@ -11,6 +12,7 @@ namespace Cosmos {
     // which in turn depends on <gigamonkey/SPV.hpp>
 
     struct SQLite_TXDB final : local_TXDB {
+
         const data::entry<data::N, Bitcoin::header> *latest () final override;
 
         const Bitcoin::header *header (const data::N &n) final override;
@@ -38,7 +40,20 @@ namespace Cosmos {
         void set_redeem (const Bitcoin::outpoint &, const inpoint &) final override;
 
         // put some constructors here
-
+        SQLite_TXDB() {
+            auto storage = sqlite_orm::make_storage("db.sqlite",
+                sqlite_orm::make_table("headers",
+                    sqlite_orm::make_column("id", &Header::id, sqlite_orm::primary_key()),
+                    sqlite_orm::make_column("version", &Header::version),
+                    sqlite_orm::make_column("previous", &Header::previous),
+                    sqlite_orm::make_column("merkle_root", &Header::merkle_root),
+                    sqlite_orm::make_column("timestamp", &Header::timestamp),
+                    sqlite_orm::make_column("target", &Header::target),
+                    sqlite_orm::make_column("nonce", &Header::nonce),
+                    sqlite_orm::make_column("hash", &Header::hash)
+                )
+            );
+        }
     private:
         // anything else needed should go here.
     };
