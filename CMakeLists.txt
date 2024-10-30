@@ -13,6 +13,11 @@ FetchContent_MakeAvailable (argh)
 FetchContent_Declare (ctre URL https://github.com/hanickadot/compile-time-regular-expressions/archive/refs/tags/v3.9.0.zip)
 FetchContent_MakeAvailable (ctre)
 
+FetchContent_Declare(sqliteOrm 
+    GIT_REPOSITORY https://github.com/fnc12/sqlite_orm
+    GIT_TAG v1.9
+)
+FetchContent_MakeAvailable(sqliteOrm)
 
 find_package (PkgConfig REQUIRED)
 pkg_check_modules(Cryptopp REQUIRED IMPORTED_TARGET libcrypto++)
@@ -25,6 +30,7 @@ add_library (cosmos_lib STATIC
     source/Cosmos/database/memory/txdb.cpp
     source/Cosmos/database/json/txdb.cpp
     source/Cosmos/database/json/price_data.cpp
+    source/Cosmos/database/sqlite/txdb.cpp
     source/Cosmos/network/whatsonchain.cpp
     source/Cosmos/network.cpp
     source/Cosmos/wallet/keys/derivation.cpp
@@ -47,7 +53,7 @@ find_package (gigamonkey CONFIG REQUIRED)
 
 target_include_directories (cosmos_lib PUBLIC include)
 
-target_link_libraries (cosmos_lib PUBLIC nlohmann_json argh Gigamonkey::gigamonkey Data::data)
+target_link_libraries (cosmos_lib PUBLIC nlohmann_json argh sqlite_orm::sqlite_orm Gigamonkey::gigamonkey Data::data)
 
 target_compile_features (cosmos_lib PUBLIC cxx_std_20)
 set_target_properties (cosmos_lib PROPERTIES CXX_EXTENSIONS OFF)
@@ -65,6 +71,7 @@ add_executable (CosmosWallet
 
 target_link_libraries (CosmosWallet PUBLIC
     cosmos_lib
+    sqlite_orm::sqlite_orm
 )
 
 target_include_directories (CosmosWallet PUBLIC include)
